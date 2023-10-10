@@ -1,7 +1,7 @@
 # Suzy
 
 Number streams ("数溪 - ShùXī" in Chinese): experimenting with Elixir / Phoenix
-for analysing and streaming billions of numbers using Decorator design pattern.
+stacks for displaying, decorating, streaming billions of numbers. 
 
 To start your Phoenix server:
 
