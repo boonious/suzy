@@ -18,6 +18,7 @@ defmodule SuzyWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+    get "/numbers", NumberController, :index
   end
 
   scope "/api", SuzyWeb do
