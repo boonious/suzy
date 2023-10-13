@@ -1,5 +1,7 @@
 defmodule SuzyWeb.NumberController do
   use SuzyWeb, :controller
+
+  alias Suzy.Number
   alias Suzy.Numbers
 
   action_fallback SuzyWeb.FallbackController
@@ -25,6 +27,7 @@ defmodule SuzyWeb.NumberController do
   def index(conn, params) do
     with {:ok, stream} <- num_range(params) |> Numbers.number_stream() do
       stream
+      |> Stream.map(fn %Number{value: v} -> v end)
       |> Enum.to_list()
       |> then(fn nums -> render(conn, :index, nums: nums, pagination: pagination(params)) end)
     end
@@ -49,9 +52,7 @@ defmodule SuzyWeb.NumberController do
   defp validate(value, _default), do: value
 
   defp send_chunks(conn, nums) do
-    chunks = %{numbers: Enum.map(nums, fn num -> %{value: num} end)} |> Jason.encode!()
-
-    case chunk(conn, chunks) do
+    case chunk(conn, %{numbers: nums} |> Jason.encode!()) do
       {:ok, conn} -> {:cont, conn}
       {:error, :closed} -> {:halt, conn}
     end

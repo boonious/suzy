@@ -15,7 +15,7 @@ defmodule SuzyWeb.NumberControllerTest do
       conn = get(conn, ~p"/api/numbers")
       assert %{"numbers" => numbers} = json_response(conn, 200)
       assert length(numbers) == page_size
-      assert hd(numbers) == %{"value" => 1}
+      assert hd(numbers) == %{"value" => 1, "attrs" => []}
 
       conn = get(conn, ~p"/numbers")
       assert html = html_response(conn, 200)
