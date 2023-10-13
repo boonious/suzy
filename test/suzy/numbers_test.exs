@@ -33,7 +33,21 @@ defmodule Suzy.NumbersTest do
     assert %Number{value: 1, attrs: []} == Numbers.new(1)
   end
 
+  test "new/2" do
+    assert %Number{value: 1, attrs: [], stack: [NumberImpl]} == Numbers.new(1, [NumberImpl])
+  end
+
   test "deduce/1" do
     assert %Number{value: 1, attrs: []} == Numbers.new(1) |> Numbers.deduce()
+  end
+
+  test "deduce/2" do
+    number = Numbers.new(15, [Numbers.Mod2, Numbers.Mod5, Numbers.Mod3])
+
+    assert %Number{
+             value: 15,
+             attrs: [:mod5, :mod3],
+             stack: [Numbers.Mod3, Numbers.Mod5, Numbers.Mod2]
+           } = number |> Numbers.deduce()
   end
 end

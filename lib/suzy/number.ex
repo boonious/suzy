@@ -8,11 +8,12 @@ defmodule Suzy.Number do
   """
 
   @derive Jason.Encoder
-  defstruct value: 1, attrs: []
+  defstruct value: 1, attrs: [], stack: []
 
   @type t :: %__MODULE__{
           value: integer(),
-          attrs: list(number() | atom())
+          attrs: list(number() | atom()),
+          stack: list(module())
         }
 
   @type num :: __MODULE__.t()
@@ -32,4 +33,7 @@ defmodule Suzy.Number do
 
   @spec new(integer()) :: num()
   def new(integer \\ 1), do: %__MODULE__{value: integer}
+
+  @spec new(num(), module()) :: num()
+  def new(number, impl), do: %{number | stack: [impl | number.stack]}
 end

@@ -3,7 +3,6 @@ defmodule Suzy.Numbers do
   The Numbers context.
   """
   alias Suzy.Number
-  alias Suzy.Numbers.Base
 
   @max_number 100_000_000_000
 
@@ -28,10 +27,16 @@ defmodule Suzy.Numbers do
   def number_stream(_), do: {:error, :num_out_of_range}
 
   @spec new(num()) :: num()
-  def new(integer), do: Number.new(integer)
+  def new(number, stack \\ [])
+  def new(integer, stack) when is_integer(integer), do: Number.new(integer) |> new(stack)
 
-  @spec new(num()) :: num()
-  def deduce(number), do: number |> Base.deduce()
+  def new(%Number{} = number, []), do: number
+  def new(%Number{} = number, [h | rest]), do: number |> Number.new(h) |> new(rest)
+
+  @spec deduce(num()) :: num()
+  def deduce(%Number{} = number), do: number |> deduce(number.stack)
+  def deduce(%Number{} = number, []), do: number
+  def deduce(%Number{} = number, [h | rest]), do: h.deduce(number) |> deduce(rest)
 
   @doc false
   def max_number, do: @max_number
