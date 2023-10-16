@@ -7,6 +7,8 @@
 # General application configuration
 import Config
 
+config :suzy, modulo_range: 2..5
+
 # Configures the endpoint
 config :suzy, SuzyWeb.Endpoint,
   url: [host: "localhost"],
