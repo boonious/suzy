@@ -1,5 +1,9 @@
 import Config
 
+config :suzy,
+  cache: Suzy.CacheMock,
+  modulo_range: 2..5
+
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
 config :suzy, SuzyWeb.Endpoint,

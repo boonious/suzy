@@ -5,7 +5,7 @@ defmodule SuzyWeb.NumberController do
   action_fallback SuzyWeb.FallbackController
 
   @attrs []
-  @attr_regex ~r/mod_([2-9]|10)$/
+  @attr_regex ~r/mod_([2-9]|10)$|cache_get/
   @chunk_size 100
   @page "1"
   @page_size "100"
@@ -15,7 +15,7 @@ defmodule SuzyWeb.NumberController do
   """
   def index(%{request_path: "/api/" <> _} = conn, params) do
     with {:ok, attrs} <- validate(params["attrs"]),
-         {:ok, stream} <- num_range(params) |> Numbers.number_stream(attrs |> stack()) do
+         {:ok, stream} <- number_stream(params, attrs) do
       stream
       |> Stream.chunk_every(@chunk_size)
       |> Enum.reduce_while(
@@ -27,7 +27,7 @@ defmodule SuzyWeb.NumberController do
 
   def index(conn, params) do
     with {:ok, attrs} <- validate(params["attrs"]),
-         {:ok, stream} <- num_range(params) |> Numbers.number_stream(attrs |> stack()) do
+         {:ok, stream} <- number_stream(params, attrs) do
       stream
       |> Stream.map(fn num -> Map.from_struct(num) end)
       # memory-bound bottleneck for now
@@ -40,6 +40,35 @@ defmodule SuzyWeb.NumberController do
         )
       end)
     end
+  end
+
+  defp number_stream(params, attrs) do
+    num_range(params) |> Numbers.number_stream(attrs |> stack())
+  end
+
+  def cache(conn, %{"number" => number} = params) do
+    with {:ok, attrs} <- validate(params["attrs"]),
+         {:ok, number} <- parse_integer(number),
+         {:ok, :cached} <- cache_number(number, attrs) do
+      conn |> put_status(200)
+
+      case conn.request_path do
+        "/api/" <> _ -> conn |> json(%{number: number})
+        _ -> render(conn, :cache, num: %{value: number, attrs: attrs, cached: true})
+      end
+    end
+  end
+
+  defp parse_integer(number) do
+    case Integer.parse(number) do
+      {integer, _} -> {:ok, integer}
+      :error -> {:error, :not_integer}
+    end
+  end
+
+  defp cache_number(number, attrs) do
+    num = Numbers.new(number, (attrs |> stack()) ++ [Numbers.CachePut]) |> Numbers.deduce()
+    num.status
   end
 
   defp num_range(params) do

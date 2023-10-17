@@ -46,8 +46,8 @@ defmodule Suzy.NumbersTest do
 
     assert %Number{
              value: 15,
-             attrs: [:mod_5, :mod_3],
-             stack: [Numbers.Mod3, Numbers.Mod5, Numbers.Mod2]
+             attrs: [:mod_3, :mod_5],
+             stack: [Numbers.Mod2, Numbers.Mod5, Numbers.Mod3]
            } = number |> Numbers.deduce()
   end
 end

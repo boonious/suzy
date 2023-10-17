@@ -7,14 +7,24 @@ defmodule Suzy.Number do
   belonging to a number e.g. "modulo-n", "prime" etc.
   """
 
-  @derive {Jason.Encoder, only: [:value, :attrs]}
-  defstruct value: 1, attrs: [], stack: []
+  @derive {Jason.Encoder, only: [:value, :attrs, :cached]}
+  defstruct value: 1,
+            attrs: [],
+            stack: [],
+            status: nil,
+            cached: false,
+            __cache_server__: Suzy.Cache.Server
 
   @type t :: %__MODULE__{
           value: integer(),
           attrs: list(atom()),
-          stack: list(module())
+          stack: list(module()),
+          status: status(),
+          cached: boolean(),
+          __cache_server__: module()
         }
+
+  @type status :: nil | {:ok, :from_cache} | {:ok, :cached} | {:error, term()}
 
   @typedoc """
   List of number attributes represented as atomic output from `c:deduce/1`.
@@ -60,8 +70,9 @@ defmodule Suzy.Number do
   def new(integer \\ 1), do: %__MODULE__{value: integer}
 
   @doc """
-  Adds implementation onto the Number stack.
+  Adds implementations onto the Number stack.
   """
-  @spec new(num(), module()) :: num()
-  def new(number, impl), do: %{number | stack: [impl | number.stack]}
+  @spec new(num(), module() | stack()) :: num()
+  def new(number, [impl | t]) when is_atom(impl), do: %{number | stack: [impl | t]}
+  def new(number, impl) when is_atom(impl), do: %{number | stack: [impl | number.stack]}
 end
