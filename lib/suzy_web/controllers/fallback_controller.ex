@@ -6,6 +6,8 @@ defmodule SuzyWeb.FallbackController do
   """
   use SuzyWeb, :controller
 
+  @err_400 [:num_out_of_range, :bad_attr]
+
   # This clause is an example of how to handle resources that cannot be found.
   def call(conn, {:error, :not_found}) do
     conn
@@ -14,7 +16,7 @@ defmodule SuzyWeb.FallbackController do
     |> render(:"404")
   end
 
-  def call(conn, {:error, :num_out_of_range}) do
+  def call(conn, {:error, error}) when error in @err_400 do
     conn
     |> put_status(400)
     |> put_view(html: SuzyWeb.ErrorHTML, json: SuzyWeb.ErrorJSON)

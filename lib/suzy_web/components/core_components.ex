@@ -302,12 +302,12 @@ defmodule SuzyWeb.CoreComponents do
     ~H"""
     <div phx-feedback-for={@name}>
       <label class="flex items-center gap-4 text-sm leading-6 text-zinc-600">
-        <input type="hidden" name={@name} value="false" />
+        <!--input type="hidden" name={@name} value="false" /-->
         <input
           type="checkbox"
           id={@id}
           name={@name}
-          value="true"
+          value={@value}
           checked={@checked}
           class="rounded border-zinc-300 text-zinc-900 focus:ring-0"
           {@rest}
