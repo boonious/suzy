@@ -13,9 +13,10 @@ defmodule Suzy.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: Suzy.PubSub},
       # Start the Endpoint (http/https)
-      SuzyWeb.Endpoint
+      SuzyWeb.Endpoint,
       # Start a worker by calling: Suzy.Worker.start_link(arg)
       # {Suzy.Worker, arg}
+      Suzy.Cache.Server
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

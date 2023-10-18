@@ -40,9 +40,8 @@ defmodule Suzy.Numbers do
   @spec new(num(), Number.stack()) :: num()
   def new(number, stack \\ [])
   def new(integer, stack) when is_integer(integer), do: Number.new(integer) |> new(stack)
-
   def new(%Number{} = number, []), do: number
-  def new(%Number{} = number, [h | rest]), do: number |> Number.new(h) |> new(rest)
+  def new(%Number{} = number, stack), do: number |> Number.new(stack)
 
   @doc """
   Invoke the runtime stack for number attributes deduction.

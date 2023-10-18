@@ -19,12 +19,14 @@ defmodule SuzyWeb.Router do
 
     get "/", PageController, :home
     get "/numbers", NumberController, :index
+    post "/numbers/:number", NumberController, :cache
   end
 
   scope "/api", SuzyWeb do
     pipe_through :api
 
     get "/numbers", NumberController, :index
+    post "/numbers/:number", NumberController, :cache
   end
 
   # Enable LiveDashboard in development
