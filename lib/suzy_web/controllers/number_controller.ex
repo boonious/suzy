@@ -8,7 +8,10 @@ defmodule SuzyWeb.NumberController do
   @page "1"
   @page_size "100"
 
-  def index(conn, params) do
+  @doc """
+  Stream or render numbers in JSON api and HTML view
+  """
+  def index(%{request_path: "/api/" <> _} = conn, params) do
     with {:ok, stream} <- num_range(params) |> Numbers.number_stream() do
       stream
       |> Stream.chunk_every(@chunk_size)
@@ -19,13 +22,31 @@ defmodule SuzyWeb.NumberController do
     end
   end
 
+  def index(conn, params) do
+    with {:ok, stream} <- num_range(params) |> Numbers.number_stream() do
+      stream
+      |> Enum.to_list()
+      |> then(fn nums -> render(conn, :index, nums: nums, pagination: pagination(params)) end)
+    end
+  end
+
   defp num_range(params) do
-    with {page_size, ""} <- (params["page_size"] || @page_size) |> Integer.parse(),
-         {page, ""} <- (params["page"] || @page) |> Integer.parse() do
+    with {page_size, ""} <- validate(params["page_size"], default_page_size()) |> Integer.parse(),
+         {page, ""} <- validate(params["page"], default_page()) |> Integer.parse() do
       start = (page - 1) * page_size
       {start + 1, start + page_size}
     end
   end
+
+  defp pagination(params) do
+    with {page_size, ""} <- validate(params["page_size"], default_page_size()) |> Integer.parse(),
+         {page, ""} <- validate(params["page"], default_page()) |> Integer.parse() do
+      %{"page" => page, "page_size" => page_size}
+    end
+  end
+
+  defp validate(value, default) when value == "" or value == nil, do: default
+  defp validate(value, _default), do: value
 
   defp send_chunks(conn, nums) do
     chunks = %{numbers: Enum.map(nums, fn num -> %{value: num} end)} |> Jason.encode!()
@@ -35,4 +56,10 @@ defmodule SuzyWeb.NumberController do
       {:error, :closed} -> {:halt, conn}
     end
   end
+
+  @doc false
+  def default_page, do: @page
+
+  @doc false
+  def default_page_size, do: @page_size
 end
