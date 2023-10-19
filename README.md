@@ -58,3 +58,42 @@ Further details:
 - https://github.com/boonious/suzy/pull/1
 - https://github.com/boonious/suzy/pull/2
 - https://github.com/boonious/suzy/pull/3
+
+### Example Rust client for the API
+
+```rust
+cd rust_client
+
+// Lists modulo-n numbers 
+cargo run GET  "http://localhost:4000/api/numbers?attrs[]=cache_get&attrs[]=mod_3&attrs[]=mod_5"
+
+// Cache a modulo-n number
+cargo run POST  "http://localhost:4000/api/numbers/3?&attrs[]=mod_3"
+```
+
+GET Response:
+
+```
+suzy_client % cargo run "get" "http://localhost:4000/api/numbers?attrs[]=cache_get&attrs[]=mod_3&attrs[]=mod_5"
+    Finished dev [unoptimized + debuginfo] target(s) in 0.11s
+    Running `target/debug/suzy_client get 'http://localhost:4000/api/numbers?attrs[]=cache_get&attrs[]=mod_3&attrs[]=mod_5'`
+1
+2
+3 Fizz cached
+4
+5 Buzz
+6 Fizz
+7
+8
+9 Fizz
+10 Buzz
+11
+12 Fizz
+13
+14
+15 FizzBuzz
+16
+17
+18 Fizz
+...
+```
