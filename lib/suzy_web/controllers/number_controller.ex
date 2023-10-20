@@ -6,7 +6,7 @@ defmodule SuzyWeb.NumberController do
 
   @attrs []
   @attr_regex ~r/mod_([2-9]|10)$|cache_get/
-  @chunk_size 100
+  @chunk_size 1000
   @page "1"
   @page_size "100"
 
